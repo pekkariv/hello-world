@@ -1,0 +1,38 @@
+group 'pekkariv'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Logging
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.9.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.9.1'
+
+    // Tests
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// Define the main class ( required for 'application' plugin')
+mainClassName = "hello.world.TestMain"
+
+task copyApplication(type: Copy) {
+    dependsOn   'distTar'
+    from        "${buildDir}/distributions/hello-world-${project.version}.tar"
+    into        "${buildDir}/docker"
+}
+
+task copyDockerFile(type: Copy) {
+    from "docker/"
+    into "${buildDir}/docker"
+    expand(projectVersion: "${project.version}")
+}
+
+assemble.dependsOn copyApplication
+assemble.dependsOn copyDockerFile
