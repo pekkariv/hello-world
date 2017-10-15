@@ -21,3 +21,18 @@ dependencies {
 
 // Define the main class ( required for 'application' plugin')
 mainClassName = "hello.world.TestMain"
+
+task copyApplication(type: Copy) {
+    dependsOn   'distTar'
+    from        "${buildDir}/distributions/hello-world-${project.version}.tar"
+    into        "${buildDir}/docker"
+}
+
+task copyDockerFile(type: Copy) {
+    from "docker/"
+    into "${buildDir}/docker"
+    expand(projectVersion: "${project.version}")
+}
+
+assemble.dependsOn copyApplication
+assemble.dependsOn copyDockerFile
